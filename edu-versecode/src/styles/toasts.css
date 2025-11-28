@@ -1,0 +1,222 @@
+/* -------------------------
+   Basic Variables (adjust to your design tokens)
+   ------------------------- */
+:root {
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --muted-fg: #6b7280;
+  --border: #e6e9ee;
+  --primary: #3b82f6;
+  --primary-fg: #ffffff;
+  --destructive: #ef4444;
+  --destructive-fg: #fff;
+  --card-bg: #ffffff;
+  --shadow-lg: 0 10px 30px rgba(2,6,23,0.12);
+}
+
+/* -------------------------
+   Viewport (top on small, bottom-right on larger screens)
+   ------------------------- */
+.toast-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 12px;
+  padding: 16px;
+  z-index: 100;
+  pointer-events: none; /* let children opt-in */
+}
+
+/* On larger screens move to bottom-right */
+@media (min-width: 640px) {
+  .toast-viewport {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: auto;
+    width: auto;
+    max-width: 420px;
+    flex-direction: column;
+  }
+}
+
+/* -------------------------
+   Toast root + state animations (Radix sets data-state & data-swipe attributes)
+   ------------------------- */
+.toast-root {
+  pointer-events: auto;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  padding: 16px;
+  padding-right: 56px;
+  box-shadow: var(--shadow-lg);
+  transition: transform 250ms ease, opacity 250ms ease;
+  align-items: center;
+}
+
+/* Variant: destructive */
+.toast-root[data-variant="destructive"] {
+  background: var(--destructive);
+  color: var(--destructive-fg);
+  border-color: rgba(0,0,0,0.06);
+}
+
+/* Swipe handling (Radix: data-swipe) */
+.toast-root[data-swipe="move"] {
+  transition: none;
+}
+
+/* Enter/Leave animations — Radix uses data-state=open/closed */
+.toast-root[data-state="open"] {
+  animation: toast-slide-in 300ms cubic-bezier(.16,.84,.44,1);
+}
+.toast-root[data-state="closed"] {
+  animation: toast-hide 100ms ease-in forwards;
+}
+
+/* Radix swipe end animation uses transform translateX var */
+@keyframes toast-slide-in {
+  from {
+    transform: translateY(-100%) translateZ(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-hide {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10%); }
+}
+
+/* For larger screens slide in from bottom */
+@media (min-width: 640px) {
+  .toast-root[data-state="open"] {
+    animation: toast-slide-in-sm 300ms cubic-bezier(.16,.84,.44,1);
+  }
+  @keyframes toast-slide-in-sm {
+    from { transform: translateY(100%) translateZ(0); opacity: 0; }
+    to { transform: translateY(0) translateZ(0); opacity: 1; }
+  }
+}
+
+/* -------------------------
+   Content layout inside toast
+   ------------------------- */
+.toast-body {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toast-text {
+  display: grid;
+  gap: 6px;
+  flex: 1 1 auto;
+}
+
+/* Title/Description */
+.toast-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.toast-desc {
+  font-size: 0.9rem;
+  color: var(--muted-fg);
+}
+
+/* Action button that sits inline */
+.toast-action {
+  margin-left: 12px;
+  flex-shrink: 0;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* If toast is destructive, style action differently via parent attribute */
+.toast-root[data-variant="destructive"] .toast-action {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: inherit;
+}
+
+/* Close button top-right */
+.toast-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border-radius: 6px;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(0,0,0,0.45);
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+/* Reveal close on hover/focus of toast */
+.toast-root:hover .toast-close,
+.toast-root:focus-within .toast-close {
+  opacity: 1;
+}
+
+/* Close icon sizing */
+.toast-close-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* -------------------------
+   Sonner tweak classes
+   ------------------------- */
+.sonner-toaster .sonner-toast {
+  border-radius: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: var(--shadow-lg);
+}
+
+.sonner-toaster .sonner-desc {
+  color: var(--muted-fg);
+}
+
+.sonner-toaster .sonner-action {
+  background: var(--primary);
+  color: var(--primary-fg);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.sonner-toaster .sonner-cancel {
+  background: #f3f4f6;
+  color: var(--muted-fg);
+  border-radius: 6px;
+  padding: 6px 10px;
+}

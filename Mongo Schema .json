@@ -1,0 +1,95 @@
+{
+  "users": {
+    "_id": "ObjectId",
+    "name": "String",
+    "email": "String",
+    "password": "String",
+    "level": "String",
+    "image": "String",
+    "courses": ["String"],
+    "role": "String (enum: student | instructor | admin)",
+    "createdAt": "Date"
+  },
+
+  "courses": {
+    "_id": "String" /* code for course ID */,
+    "name": "String",
+    "creditHours": "Number",
+    "description": "String",
+    "instructorId": ["ObjectId"]
+  },
+
+  "posts": {
+    "_id": "ObjectId",
+    "sender": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "courseId": "String",
+    "title": "String",
+    "body": "String",
+    "attachmentsId": ["ObjectId"],
+
+    "type": "String (enum: question | announcement | discussion)",
+    "answered": "Boolean",
+    "createdAt": "Date"
+  },
+
+  "comments": {
+    "_id": "ObjectId",
+    "postId": "ObjectId",
+    "sender": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "body": "String",
+    "createdAt": "Date"
+  },
+
+  "reactions": {
+    "_id": "ObjectId",
+    "postId": "ObjectId",
+    "senderId": "ObjectId",
+    "type": "String (enum: like | love | shocked | laugh | sad)",
+    "createdAt": "Date"
+  },
+
+  "chats": {
+    "_id": "ObjectId",
+    "user1": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "user2": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "lastMessage": "string"
+  },
+
+  "messages": {
+    "_id": "ObjectId",
+    "senderId": "ObjectId",
+    "receiverId": "ObjectId",
+    "text": "String",
+    "attachmentsId": ["ObjectId"],
+    "createdAt": "Date"
+  },
+
+  "files": {
+    "_id": "ObjectId",
+    "fileName": "String",
+    "fileType": "String (enum: image | pdf | word)",
+    "fileData": "binary",
+
+    "courseId": "ObjectId",
+    "postId": "ObjectId",
+    "messageId": "ObjectId",
+
+    "createdAt": "Date"
+  }
+}
