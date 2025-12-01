@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVerse - Educational Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="message-display-fix.css">
+</head>
+<body>
+    <!-- Login/Signup Screen -->
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>📚 EduVerse</h1>
+                <p>Connect, Learn, Collaborate</p>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="auth-form active">
+                <h2>Welcome Back</h2>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" placeholder="your.email@edu.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">Sign In</button>
+                </form>
+                <p class="auth-switch">
+                    Don't have an account? <a href="#" onclick="switchToSignup()">Sign up</a>
+                </p>
+                <div class="demo-credentials">
+                    <p><strong>Demo Account:</strong></p>
+                    <p>Email: emma.williams@student.edu</p>
+                    <p>Password: password123</p>
+                </div>
+            </div>
+            
+            <!-- Signup Form -->
+            <div id="signup-form" class="auth-form">
+                <h2>Create Account</h2>
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signup-name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signup-email" placeholder="your.email@edu.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signup-password" placeholder="••••••••" minlength="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="signup-role" required onchange="handleRoleChange()">
+                            <option value="student">Student</option>
+                            <option value="ta">Teaching Assistant (TA)</option>
+                            <option value="instructor">Instructor</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="level-group">
+                        <label>Level <span class="required-indicator">*</span></label>
+                        <input type="text" id="signup-level" placeholder="e.g., Freshman, Sophomore" required>
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">Create Account</button>
+                </form>
+                <p class="auth-switch">
+                    Already have an account? <a href="#" onclick="switchToLogin()">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="main-app" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>📚 EduVerse</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+                    <span class="nav-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-view="messages" onclick="switchView('messages')">
+                    <span class="nav-icon">💬</span>
+                    <span>Messages</span>
+                    <span class="badge" id="message-badge" style="display: none;">0</span>
+                </a>
+                <a href="#" class="nav-item" data-view="all-courses" onclick="switchView('all-courses')">
+                    <span class="nav-icon">🔍</span>
+                    <span>Browse Courses</span>
+                </a>
+                <div class="nav-dropdown">
+                    <a href="#" class="nav-item" data-view="my-courses" onclick="toggleCoursesDropdown(event)">
+                        <span class="nav-icon">📖</span>
+                        <span>My Courses</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <div class="dropdown-content" id="courses-dropdown">
+                        <div id="sidebar-courses-list" class="sidebar-courses-list">
+                            <div style="padding:0.75rem;color:var(--gray);font-size:0.85rem">Loading courses...</div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-card" onclick="switchView('profile')">
+                    <div class="user-avatar" id="sidebar-avatar">E</div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebar-name">Loading...</div>
+                        <div class="user-role" id="sidebar-role">Student</div>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search courses, posts, people..." id="global-search" oninput="handleSearch()" onfocus="handleSearch()" onblur="setTimeout(hideSearchResults, 200)">
+                    <div id="search-results" class="search-results"></div>
+                </div>
+                <div class="top-bar-actions">
+                    <button class="icon-btn" title="Notifications" onclick="showNotifications()">
+                        <span>🔔</span>
+                        <span class="notification-dot" id="notification-dot" style="display: none;"></span>
+                    </button>
+                    <button class="icon-btn" title="Settings" onclick="showSettings()">
+                        <span>⚙️</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Dashboard View -->
+                <div id="dashboard-view" class="view active">
+                    <div class="view-header">
+                        <h2>Dashboard</h2>
+                        <p>Welcome back! Here's what's happening</p>
+                    </div>
+                    
+                    <div class="dashboard-layout">
+                        <!-- Main Content Area -->
+                        <div class="dashboard-main">
+                            <div class="dashboard-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">📚</div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="enrolled-count">0</div>
+                                        <div class="stat-label">Enrolled Courses</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">📝</div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="posts-count">0</div>
+                                        <div class="stat-label">Posts Created</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">💬</div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="comments-count">0</div>
+                                        <div class="stat-label">Comments</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">⭐</div>
+                                    <div class="stat-info">
+                                        <div class="stat-value" id="reactions-count">0</div>
+                                        <div class="stat-label">Reactions Given</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="recent-activity">
+                                <h3>Recent Activity</h3>
+                                <div id="recent-posts"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sidebar Widgets -->
+                        <div class="dashboard-sidebar">
+                            <!-- Trending Topics Widget -->
+                            <div class="widget trending-widget">
+                                <div class="widget-header">
+                                    <span class="widget-icon">📈</span>
+                                    <h3>Trending Topics</h3>
+                                </div>
+                                <div class="widget-content">
+                                    <div class="trending-item" onclick="searchTopic('Data Structures')">
+                                        <div class="trending-info">
+                                            <span class="trending-tag">#Data Structures</span>
+                                        </div>
+                                        <span class="trending-count">253</span>
+                                    </div>
+                                    <div class="trending-item" onclick="searchTopic('Machine Learning')">
+                                        <div class="trending-info">
+                                            <span class="trending-tag">#Machine Learning</span>
+                                        </div>
+                                        <span class="trending-count">186</span>
+                                    </div>
+                                    <div class="trending-item" onclick="searchTopic('Web Development')">
+                                        <div class="trending-info">
+                                            <span class="trending-tag">#Web Development</span>
+                                        </div>
+                                        <span class="trending-count">124</span>
+                                    </div>
+                                    <div class="trending-item" onclick="searchTopic('Algorithms')">
+                                        <div class="trending-info">
+                                            <span class="trending-tag">#Algorithms</span>
+                                        </div>
+                                        <span class="trending-count">128</span>
+                                    </div>
+                                    <div class="trending-item" onclick="searchTopic('Database Design')">
+                                        <div class="trending-info">
+                                            <span class="trending-tag">#Database Design</span>
+                                        </div>
+                                        <span class="trending-count">95</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Upcoming Events Widget -->
+                            <div class="widget events-widget">
+                                <div class="widget-header">
+                                    <span class="widget-icon">📅</span>
+                                    <h3>Upcoming Events</h3>
+                                </div>
+                                <div class="widget-content">
+                                    <div class="event-item">
+                                        <div class="event-badge tomorrow">Tomorrow</div>
+                                        <div class="event-info">
+                                            <div class="event-title">Study Group - Calculus II</div>
+                                            <div class="event-details">
+                                                <span>🕐 3:00 PM</span>
+                                                <span>📍 Virtual Room A</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="event-item">
+                                        <div class="event-badge this-week">This Week</div>
+                                        <div class="event-info">
+                                            <div class="event-title">Guest Lecture: AI Ethics</div>
+                                            <div class="event-details">
+                                                <span>🕐 2:00 PM</span>
+                                                <span>📍 Hall B</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="event-item">
+                                        <div class="event-badge this-week">This Week</div>
+                                        <div class="event-info">
+                                            <div class="event-title">CS101 Midterm Exam</div>
+                                            <div class="event-details">
+                                                <span>🕐 10:00 AM</span>
+                                                <span>📍 Online</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="event-item">
+                                        <div class="event-badge next-week">Next Week</div>
+                                        <div class="event-info">
+                                            <div class="event-title">Hackathon 2024</div>
+                                            <div class="event-details">
+                                                <span>🕐 9:00 AM</span>
+                                                <span>📍 Campus Center</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Courses View -->
+                <div id="my-courses-view" class="view">
+                    <div class="view-header">
+                        <h2>My Courses</h2>
+                        <p>Courses you're currently enrolled in</p>
+                    </div>
+                    <div id="my-courses-list" class="courses-grid"></div>
+                </div>
+
+                <!-- All Courses View -->
+                <div id="all-courses-view" class="view">
+                    <div class="view-header">
+                        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+                            <div>
+                                <h2>Browse Courses</h2>
+                                <p>Discover and enroll in new courses</p>
+                            </div>
+                            <button id="create-course-btn" class="btn-primary" onclick="showCreateCourseModal()" style="display:none">
+                                ➕ Create Course
+                            </button>
+                        </div>
+                    </div>
+                    <div id="all-courses-list" class="courses-grid"></div>
+                </div>
+
+                <!-- Course Detail View -->
+                <div id="course-detail-view" class="view">
+                    <div class="view-header">
+                        <button class="btn-back" onclick="goBack()">← Back</button>
+                        <div>
+                            <h2 id="course-title"></h2>
+                            <p id="course-description"></p>
+                        </div>
+                    </div>
+                    <div class="course-tabs">
+                        <button class="tab-btn active" onclick="switchCourseTab('posts')">Posts</button>
+                        <button class="tab-btn" onclick="switchCourseTab('files')">Files</button>
+                        <button class="tab-btn" onclick="switchCourseTab('about')">About</button>
+                    </div>
+                    <div class="course-content">
+                        <div id="course-posts-tab" class="tab-content active">
+                            <div class="create-post-card">
+                                <h3>Create Post</h3>
+                                <input type="text" id="post-title" placeholder="Post title">
+                                <textarea id="post-body" placeholder="What's on your mind?"></textarea>
+                                <div class="file-upload-section">
+                                    <label for="post-image" class="file-upload-label">
+                                        <span>📷 Add Image</span>
+                                        <input type="file" id="post-image" accept="image/*" onchange="handleImagePreview(this)">
+                                    </label>
+                                    <div id="image-preview" class="image-preview"></div>
+                                    <button type="button" id="remove-image-btn" class="btn-remove-image" onclick="removeImage()" style="display:none">✕ Remove Image</button>
+                                </div>
+                                <div class="post-actions">
+                                    <select id="post-type">
+                                        <option value="discussion">💭 Discussion</option>
+                                        <option value="question">❓ Question</option>
+                                        <option value="announcement">📢 Announcement</option>
+                                    </select>
+                                    <button class="btn-primary" onclick="createPost()">Post</button>
+                                </div>
+                            </div>
+                            <div id="posts-list"></div>
+                        </div>
+                        <div id="course-files-tab" class="tab-content">
+                            <div id="upload-file-card" class="create-post-card" style="display:none">
+                                <h3>Upload File</h3>
+                                <input type="text" id="file-title" placeholder="File name/description">
+                                <div class="file-upload-section">
+                                    <label for="course-file" class="file-upload-label">
+                                        <span>📎 Choose File</span>
+                                        <input type="file" id="course-file" onchange="handleFileSelect(this)">
+                                    </label>
+                                    <div id="file-info" class="file-info"></div>
+                                </div>
+                                <button class="btn-primary" onclick="uploadFile()">Upload</button>
+                            </div>
+                            <div id="files-list"></div>
+                        </div>
+                        <div id="course-about-tab" class="tab-content">
+                            <div id="course-about-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages View -->
+                <div id="messages-view" class="view">
+                    <div class="messages-container">
+                        <div class="chats-sidebar">
+                            <div class="chats-header">
+                                <h3>Messages</h3>
+                                <button class="icon-btn" onclick="showNewChatModal()">➕</button>
+                            </div>
+                            <div id="chats-list"></div>
+                        </div>
+                        <div class="chat-area">
+                            <div id="chat-header" class="chat-header">
+                                <span>Select a chat to start messaging</span>
+                            </div>
+                            <div id="messages-list" class="messages-list"></div>
+                            <div class="message-input">
+                                <button class="btn-attachment" onclick="toggleAttachmentMenu()" title="Attach file or image">
+                                    <span>📎</span>
+                                </button>
+                                <div id="attachment-menu" class="attachment-menu">
+                                    <div class="attachment-option" onclick="selectMessageImage()">
+                                        <span>🖼️</span>
+                                        <span>Image</span>
+                                    </div>
+                                    <div class="attachment-option" onclick="selectMessageFile()">
+                                        <span>📄</span>
+                                        <span>File</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="message-image-input" accept="image/*" style="display:none" onchange="handleMessageImage(this)">
+                                <input type="file" id="message-file-input" style="display:none" onchange="handleMessageFile(this)">
+                                <div id="message-attachment-preview" class="message-attachment-preview"></div>
+                                <input type="text" id="message-text" placeholder="Type a message...">
+                                <button class="btn-primary" onclick="sendMessage()">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile View -->
+                <div id="profile-view" class="view">
+                    <div class="view-header">
+                        <h2>Profile</h2>
+                        <p>Manage your account information</p>
+                    </div>
+                    <div class="profile-container">
+                        <div class="profile-header-card">
+                            <div class="profile-cover"></div>
+                            <div class="profile-info-section">
+                                <div class="profile-avatar-large" id="profile-avatar">E</div>
+                                <div class="profile-details">
+                                    <h2 id="profile-name">Loading...</h2>
+                                    <p class="profile-role" id="profile-role">Student</p>
+                                    <p class="profile-email" id="profile-email">email@example.com</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-content-grid">
+                            <div class="profile-card">
+                                <h3>About</h3>
+                                <div class="profile-field">
+                                    <label>Level</label>
+                                    <div id="profile-level">-</div>
+                                </div>
+                                <div class="profile-field">
+                                    <label>Member Since</label>
+                                    <div id="profile-joined">-</div>
+                                </div>
+                                <div class="profile-field">
+                                    <label>Enrolled Courses</label>
+                                    <div id="profile-courses-count">0</div>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-card">
+                                <h3>Activity Stats</h3>
+                                <div class="stats-list">
+                                    <div class="stat-item">
+                                        <span class="stat-icon">📝</span>
+                                        <span class="stat-text">Posts Created</span>
+                                        <span class="stat-number" id="profile-posts">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-icon">💬</span>
+                                        <span class="stat-text">Comments</span>
+                                        <span class="stat-number" id="profile-comments">0</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-icon">👍</span>
+                                        <span class="stat-text">Reactions</span>
+                                        <span class="stat-number" id="profile-reactions">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-card full-width">
+                                <h3>Enrolled Courses</h3>
+                                <div id="profile-courses-list" class="courses-mini-grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Post Detail Modal -->
+    <div id="post-modal" class="modal">
+        <div class="modal-content">
+            <div id="post-detail"></div>
+            <button class="modal-close" onclick="closePostModal()">×</button>
+            <div class="reactions-bar">
+                <button class="reaction-btn" onclick="addReaction('like')" title="Like">👍</button>
+                <button class="reaction-btn" onclick="addReaction('love')" title="Love">❤️</button>
+                <button class="reaction-btn" onclick="addReaction('shocked')" title="Shocked">😮</button>
+                <button class="reaction-btn" onclick="addReaction('laugh')" title="Laugh">😂</button>
+                <button class="reaction-btn" onclick="addReaction('sad')" title="Sad">😢</button>
+            </div>
+            <div class="comments-section">
+                <h3>Comments</h3>
+                <div id="comments-list"></div>
+                <div class="add-comment">
+                    <textarea id="comment-body" placeholder="Add a comment..."></textarea>
+                    <button class="btn-primary" onclick="addComment()">Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Course Modal -->
+    <div id="create-course-modal" class="modal">
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="closeCreateCourseModal()">×</button>
+            <h3>Create New Course</h3>
+            <div class="form-group">
+                <label>Course Code</label>
+                <input type="text" id="new-course-code" placeholder="e.g., CS501">
+            </div>
+            <div class="form-group">
+                <label>Course Name</label>
+                <input type="text" id="new-course-name" placeholder="e.g., Advanced AI">
+            </div>
+            <div class="form-group">
+                <label>Credit Hours</label>
+                <input type="number" id="new-course-credits" placeholder="3" min="1" max="6">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="new-course-description" placeholder="Course description..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Capacity</label>
+                <input type="number" id="new-course-capacity" placeholder="30" min="1">
+            </div>
+            <button class="btn-primary btn-block" onclick="createCourse()">Create Course</button>
+        </div>
+    </div>
+
+    <!-- New Chat Modal -->
+    <div id="new-chat-modal" class="modal">
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="closeNewChatModal()">×</button>
+            <h3>Start New Chat</h3>
+            <div class="search-container">
+                <input type="text" id="user-search" placeholder="Search users..." oninput="searchUsers()">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div id="users-list" class="users-list"></div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div id="notifications-modal" class="modal">
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="closeNotifications()">×</button>
+            <h3>Notifications</h3>
+            <div id="notifications-list" class="notifications-list">
+                <div class="notification-item">
+                    <span class="notification-icon">📝</span>
+                    <div class="notification-content">
+                        <div class="notification-title">New post in CS101</div>
+                        <div class="notification-time">2 hours ago</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <span class="notification-icon">💬</span>
+                    <div class="notification-content">
+                        <div class="notification-title">New comment on your post</div>
+                        <div class="notification-time">5 hours ago</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <span class="notification-icon">👍</span>
+                    <div class="notification-content">
+                        <div class="notification-title">Someone reacted to your post</div>
+                        <div class="notification-time">1 day ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content modal-small">
+            <button class="modal-close" onclick="closeSettings()">×</button>
+            <h3>Settings</h3>
+            <div class="settings-section">
+                <h4>Account Settings</h4>
+                <div class="setting-item">
+                    <label>Email Notifications</label>
+                    <input type="checkbox" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Push Notifications</label>
+                    <input type="checkbox" checked>
+                </div>
+                <div class="setting-item">
+                    <label>Show Online Status</label>
+                    <input type="checkbox" checked>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>Privacy</h4>
+                <div class="setting-item">
+                    <label>Profile Visibility</label>
+                    <select>
+                        <option>Everyone</option>
+                        <option>Enrolled Students Only</option>
+                        <option>Private</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Message Permissions</label>
+                    <select>
+                        <option>Everyone</option>
+                        <option>Enrolled Students Only</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h4>Appearance</h4>
+                <div class="setting-item">
+                    <label>Theme</label>
+                    <select id="theme-selector">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-primary btn-block" onclick="saveSettings()">Save Settings</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="image-fix.js"></script>
+    <script src="message-scroll-fix.js"></script>
+    <script src="auto-open-chat.js"></script>
+    <script src="password-toggle.js"></script>
+    <script src="message-actions.js"></script>
+    <script src="message-attachments-fix.js"></script>
+</body>
+</html>
