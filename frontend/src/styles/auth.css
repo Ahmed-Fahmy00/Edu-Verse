@@ -85,3 +85,52 @@
 .toggle-link:hover {
   text-decoration: underline;
 }
+
+.forgot-password-link {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.forgot-password-link a {
+  color: var(--primary);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+  text-decoration: underline;
+}
+
+.reset-sent {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.sent-icon {
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.sent-icon.success {
+  color: #22c55e;
+}
+
+.sent-note {
+  color: var(--secondary);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.back-to-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--primary);
+  text-decoration: none;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.back-to-login:hover {
+  text-decoration: underline;
+}

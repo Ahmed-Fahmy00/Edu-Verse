@@ -3,6 +3,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SonnerToaster } from "./components/ui/feedback";
 import { isAuthenticated } from "./api/session";
 import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import Courses from "./pages/Courses";
@@ -35,6 +37,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={ <AuthRoute> <Auth /> </AuthRoute>}/>
+          <Route path="/forgot-password" element={ <AuthRoute> <ForgotPassword /> </AuthRoute>}/>
+          <Route path="/reset-password/:token" element={ <AuthRoute> <ResetPassword /> </AuthRoute>}/>
           <Route path="/" element={ <ProtectedRoute> <Home /> </ProtectedRoute> }/>
           <Route path="/profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute>}
           />

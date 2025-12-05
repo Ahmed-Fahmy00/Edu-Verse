@@ -43,3 +43,15 @@ export const getCurrentUser = async () => {
   const response = await apiClient.get("/users/me");
   return response.data.user;
 };
+
+// Forgot password
+export const forgotPassword = async (email) => {
+  const response = await apiClient.post("/users/forgot-password", { email });
+  return response.data;
+};
+
+// Reset password
+export const resetPassword = async (token, password) => {
+  const response = await apiClient.post("/users/reset-password", { token, password });
+  return response.data;
+};

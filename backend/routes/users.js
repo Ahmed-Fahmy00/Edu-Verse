@@ -4,6 +4,8 @@ const {
   register,
   login,
   getCurrentUser,
+  forgotPassword,
+  resetPassword,
 } = require("../services/auth");
 const {
   getUserProfile,
@@ -19,6 +21,8 @@ const { auth } = require("../middleware/auth");
 router.post("/register", register);
 router.post("/login", login);
 router.get("/me", auth, getCurrentUser);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 
 // User profile routes
 router.get("/search", auth, searchUsers);

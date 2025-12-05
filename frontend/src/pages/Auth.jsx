@@ -153,6 +153,12 @@ const Auth = () => {
                   ? "Sign In"
                   : "Create Account"}
               </Button>
+
+              {isLogin && (
+                <div className="forgot-password-link">
+                  <a href="/forgot-password">Forgot password?</a>
+                </div>
+              )}
             </form>
 
             <div className="auth-toggle">
