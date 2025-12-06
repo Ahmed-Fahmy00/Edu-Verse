@@ -51,12 +51,12 @@ const Chats = () => {
   }, []);
 
   useEffect(() => {
-    if (activeChat) {
+    if (activeChat?._id) {
       loadMessages(activeChat._id);
       startPolling(activeChat._id);
     }
     return () => stopPolling();
-  }, [activeChat]);
+  }, [activeChat?._id]);
 
   useEffect(() => {
     // Only scroll if new messages arrived
@@ -82,25 +82,31 @@ const Chats = () => {
     stopPolling();
     pollingRef.current = setInterval(async () => {
       try {
-        // Poll for new messages only
+        // Poll for new messages only - don't set loading state during polling
         const data = await getMessages(chatId);
-        setMessages((prev) => {
-          // Create a map of existing message IDs
-          const existingIds = new Set(prev.map((m) => m._id));
-          const serverIds = new Set(data.map((m) => m._id));
-          
-          // Check if there are new messages from server
-          const hasNewMessages = data.some((m) => !existingIds.has(m._id));
-          // Check if any messages were deleted
-          const hasDeletedMessages = prev.some((m) => !serverIds.has(m._id));
-          
-          if (hasNewMessages || hasDeletedMessages) {
-            return data;
-          }
-          return prev;
-        });
+        if (Array.isArray(data)) {
+          setMessages((prev) => {
+            // Create a map of existing message IDs
+            const existingIds = new Set(prev.map((m) => m._id));
+            const serverIds = new Set(data.map((m) => m._id));
+            
+            // Check if there are new messages from server
+            const hasNewMessages = data.some((m) => !existingIds.has(m._id));
+            // Check if any messages were deleted
+            const hasDeletedMessages = prev.some((m) => !serverIds.has(m._id));
+            
+            if (hasNewMessages || hasDeletedMessages) {
+              return data;
+            }
+            return prev;
+          });
+        }
       } catch (error) {
-        console.error("Polling error:", error);
+        // Silently handle polling errors - don't disrupt UI
+        // Only log in development
+        if (process.env.NODE_ENV === 'development') {
+          console.error("Polling error:", error);
+        }
       }
     }, POLLING_INTERVAL);
   }, []);
