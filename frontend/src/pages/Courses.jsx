@@ -3,22 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Card, CardContent, CardHeader } from "../components/ui/display";
 import { Button } from "../components/ui/button";
-import {
-  BookOpen,
-  Users,
-  Clock,
-  Search,
-  X,
-  ChevronDown,
-  ChevronRight,
-} from "lucide-react";
+import { BookOpen, Users, Clock, Search, X, ChevronDown, ChevronRight } from "lucide-react";
 import { getSession } from "../api/session";
-import {
-  getAllCourses,
-  getEnrolledCourses,
-  enrollStudent,
-  unenrollStudent,
-} from "../api/courses";
+import { getAllCourses, getEnrolledCourses, enrollStudent, unenrollStudent } from "../api/courses";
 import { toast } from "sonner";
 import "../styles/courses.css";
 

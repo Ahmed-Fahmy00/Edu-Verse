@@ -1,11 +1,6 @@
-/**
- * Empty State Component
- * Displays when there's no data to show
- */
-
 import React from "react";
 import { Card, CardContent } from "../ui/display";
-import "./EmptyState.css";
+import "../../styles/empty-state.css";
 
 const EmptyState = ({
   message = "No data available",

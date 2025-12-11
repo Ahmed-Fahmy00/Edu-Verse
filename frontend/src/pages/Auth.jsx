@@ -48,7 +48,6 @@ const Auth = () => {
       }
       navigate("/");
     } catch (error) {
-      // Error is handled by axios interceptor
       console.error("Auth error:", error);
     } finally {
       setLoading(false);

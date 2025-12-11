@@ -1,18 +1,4 @@
-/**
- * Post Detail Page Specific Styles
- * Only unique styles not covered by components.css
- */
-
-/* Import shared components */
 @import "./components.css";
 @import "./utilities.css";
 
-/* No additional styles needed! 
-   All styles are now in components.css
-   Just use modifier classes when needed:
-   
-   - .post-title--large for larger title
-   - .post-text--preserve-whitespace for pre-wrap
-   - .comments-section--no-border for no top border
-   - .post-reactions--with-bottom-border if needed
-*/
+

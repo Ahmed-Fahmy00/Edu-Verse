@@ -77,12 +77,7 @@ export function useForm(initialValues = {}, onSubmit, validate) {
     [values, validate, onSubmit]
   );
 
-  const reset = useCallback(() => {
-    setValues(initialValues);
-    setErrors({});
-    setTouched({});
-    setIsSubmitting(false);
-  }, [initialValues]);
+  const reset = useCallback(() => { setValues(initialValues); setErrors({}); setTouched({}); setIsSubmitting(false);}, [initialValues]);
 
   const setFieldValue = useCallback((name, value) => {
     setValues((prev) => ({
@@ -98,62 +93,38 @@ export function useForm(initialValues = {}, onSubmit, validate) {
     }));
   }, []);
 
-  return {
-    values,
-    errors,
-    touched,
-    isSubmitting,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    reset,
-    setFieldValue,
-    setFieldError,
-    setValues,
-  };
+  return { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit, reset, setFieldValue, setFieldError, setValues,};
 }
 
 export const validators = {
   required: (value) => {
-    if (!value || (typeof value === "string" && !value.trim())) {
-      return "This field is required";
-    }
+    if (!value || (typeof value === "string" && !value.trim())) return "This field is required";
     return "";
   },
 
   email: (value) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (value && !emailRegex.test(value)) {
-      return "Please enter a valid email address";
-    }
+    if (value && !emailRegex.test(value)) return "Please enter a valid email address";
     return "";
   },
 
   minLength: (min) => (value) => {
-    if (value && value.length < min) {
-      return `Must be at least ${min} characters`;
-    }
+    if (value && value.length < min) return `Must be at least ${min} characters`;
     return "";
   },
 
   maxLength: (max) => (value) => {
-    if (value && value.length > max) {
-      return `Must be no more than ${max} characters`;
-    }
+    if (value && value.length > max) return `Must be no more than ${max} characters`;
     return "";
   },
 
   password: (value) => {
-    if (value && value.length < 6) {
-      return "Password must be at least 6 characters";
-    }
+    if (value && value.length < 6) return "Password must be at least 6 characters";
     return "";
   },
 
   match: (fieldName, fieldLabel) => (value, values) => {
-    if (value !== values[fieldName]) {
-      return `Must match ${fieldLabel}`;
-    }
+    if (value !== values[fieldName]) return `Must match ${fieldLabel}`;
     return "";
   },
 };

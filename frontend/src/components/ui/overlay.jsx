@@ -2,7 +2,7 @@ import React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { cn } from "../../lib/utils";
-import "./overlay.css";
+import "../../styles/overlay.css";
 
 // Dialog Components
 const Dialog = DialogPrimitive.Root;

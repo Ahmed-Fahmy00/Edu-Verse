@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
-/**
- * Virtual scrolling list component for better performance with large lists
- * Only renders visible items + buffer
- */
 const VirtualList = ({
   items = [],
   itemHeight = 100,
@@ -15,28 +11,22 @@ const VirtualList = ({
   const [scrollTop, setScrollTop] = useState(0);
   const containerRef = useRef(null);
 
-  // Calculate visible range
   const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
   const endIndex = Math.min(
     items.length - 1,
     Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan
   );
 
-  // Get visible items
   const visibleItems = items.slice(startIndex, endIndex + 1);
 
-  // Total height of all items
   const totalHeight = items.length * itemHeight;
 
-  // Offset for visible items
   const offsetY = startIndex * itemHeight;
 
-  // Handle scroll
   const handleScroll = useCallback((e) => {
     setScrollTop(e.target.scrollTop);
   }, []);
 
-  // Throttle scroll events
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

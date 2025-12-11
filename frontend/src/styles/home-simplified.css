@@ -1,13 +1,6 @@
-/**
- * Home Page Specific Styles
- * Only unique styles not covered by components.css
- */
-
-/* Import shared components */
 @import "./components.css";
 @import "./utilities.css";
 
-/* Create Post Specific */
 .create-post-card {
   position: relative;
 }

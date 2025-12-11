@@ -1,7 +1,6 @@
 const Message = require("../models/Message");
 const Chat = require("../models/Chat");
 
-// Helper to validate ObjectId - must be exactly 24 hex characters
 const isValidObjectId = (id) => {
   if (!id) return false;
   const str = String(id);

@@ -1,26 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  GraduationCap,
-  Home,
-  BookOpen,
-  MessageSquare,
-  User,
-  LogOut,
-  Search,
-  X,
-  Sun,
-  Moon,
-} from "lucide-react";
+import { GraduationCap, Home, BookOpen, MessageSquare, User, LogOut, Search, X, Sun, Moon } from "lucide-react";
 import { useDarkMode } from "../hooks";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, Card } from "./ui/display";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "./ui/overlay";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "./ui/overlay";
 import { clearSession } from "../api/session";
 import { searchUsers } from "../api/users";
 import { toast } from "sonner";

@@ -1,29 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Avatar,
-  AvatarFallback,
-  Badge,
-} from "../components/ui/display";
+import { Card, CardContent, CardHeader, Avatar, AvatarFallback, Badge } from "../components/ui/display";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/form-elements";
-import {
-  Heart,
-  MessageCircle,
-  Smile,
-  Laugh,
-  Frown,
-  ThumbsUp,
-  Send,
-  ArrowLeft,
-  MoreVertical,
-  Edit,
-  Trash2,
-} from "lucide-react";
+import { Heart, MessageCircle, Smile, Laugh, Frown, ThumbsUp, Send, ArrowLeft, MoreVertical, Edit, Trash2 } from "lucide-react";
 import { getSession } from "../api/session";
 import { getComments, createComment } from "../api/comments";
 import { getReactions, upsertReaction, deleteReaction } from "../api/reactions";
@@ -57,7 +38,6 @@ const PostDetail = () => {
       loadPost();
     }
 
-    // Refresh post every 30 seconds to get updated user names
     const refreshInterval = setInterval(() => {
       if (getSession()) {
         loadPost();
@@ -93,7 +73,6 @@ const PostDetail = () => {
 
       const data = await response.json();
 
-      // The API returns { post, comments, reactions, userReaction }
       setPost(data.post);
       setComments(data.comments || []);
       setReactions({

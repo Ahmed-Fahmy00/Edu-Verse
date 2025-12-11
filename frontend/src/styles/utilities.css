@@ -1,13 +1,3 @@
-/**
- * Utility Classes
- * Common utility classes for quick styling adjustments
- */
-
-/* ============================================
-   LAYOUT UTILITIES
-   ============================================ */
-
-/* Page Containers */
 .page {
   min-height: 100vh;
   background-color: var(--bg-primary);

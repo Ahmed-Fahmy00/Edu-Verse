@@ -26,8 +26,6 @@ export const getUserCourses = async (userId) => {
 
 // Search users
 export const searchUsers = async (query) => {
-  const response = await apiClient.get("/users/search", {
-    params: { query },
-  });
+  const response = await apiClient.get("/users/search", { params: { query },});
   return response.data;
 };

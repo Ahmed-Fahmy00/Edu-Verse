@@ -1,44 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Avatar,
-  AvatarFallback,
-  Badge,
-} from "../components/ui/display";
+import { Card, CardContent, CardHeader, Avatar, AvatarFallback, Badge } from "../components/ui/display";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/form-elements";
-import {
-  ArrowLeft,
-  Users,
-  BookOpen,
-  FileText,
-  Info,
-  Download,
-  Upload,
-  Trash2,
-  Plus,
-  X,
-  Calendar,
-  MapPin,
-  Heart,
-  MessageCircle,
-  Smile,
-  Laugh,
-  Frown,
-  ThumbsUp,
-  Send,
-} from "lucide-react";
+import { ArrowLeft, Users, BookOpen, FileText, Info, Download, Upload, Trash2, Plus, X, Calendar, MapPin, Heart, MessageCircle, Smile, Laugh, Frown, ThumbsUp, Send } from "lucide-react";
 import { getSession } from "../api/session";
-import {
-  getCourseById,
-  enrollStudent,
-  unenrollStudent,
-  getEnrolledCourses,
-} from "../api/courses";
+import { getCourseById, enrollStudent, unenrollStudent, getEnrolledCourses } from "../api/courses";
 import { getAllPosts, createPost } from "../api/posts";
 import { getComments, createComment } from "../api/comments";
 import { getReactions, upsertReaction, deleteReaction } from "../api/reactions";
@@ -89,7 +57,6 @@ const CourseDetails = () => {
       loadCourseData(session.user);
     }
 
-    // Refresh data every 30 seconds to get updated user names
     const refreshInterval = setInterval(() => {
       const currentSession = getSession();
       if (currentSession) {
@@ -106,7 +73,6 @@ const CourseDetails = () => {
       const courseData = await getCourseById(id);
       setCourse(courseData);
 
-      // Check if user is instructor of this course
       if (currentUser && currentUser.role === "instructor") {
         let isTeaching = false;
         if (Array.isArray(courseData.instructorId)) {
@@ -121,11 +87,9 @@ const CourseDetails = () => {
         setIsInstructor(isTeaching);
       }
 
-      // Load posts for this course
       const postsData = await getAllPosts(id);
       setPosts(postsData);
 
-      // Load reactions and comments for each post
       if (postsData && postsData.length > 0) {
         for (const post of postsData) {
           loadPostReactions(post._id);
@@ -133,13 +97,11 @@ const CourseDetails = () => {
         }
       }
 
-      // Check if user is enrolled
       if (currentUser) {
         const enrolledCourses = await getEnrolledCourses(currentUser._id);
         setIsEnrolled(enrolledCourses.some((c) => c._id === id));
       }
 
-      // Load files (you'll need to implement this endpoint)
       await loadFiles();
     } catch (error) {
       console.error("Error loading course:", error);
@@ -250,7 +212,6 @@ const CourseDetails = () => {
   const uploadFiles = async (fileList) => {
     const filesToUpload = Array.from(fileList);
 
-    // Validate files
     for (const file of filesToUpload) {
       if (file.size > 10 * 1024 * 1024) {
         toast.error(`${file.name} exceeds 10MB limit`);
@@ -265,7 +226,7 @@ const CourseDetails = () => {
       for (const file of filesToUpload) {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("courseId", id); // Add course ID
+        formData.append("courseId", id);
 
         const response = await fetch(`${process.env.REACT_APP_API_URL}/files`, {
           method: "POST",
@@ -299,7 +260,7 @@ const CourseDetails = () => {
     if (!files || files.length === 0) return;
 
     await uploadFiles(files);
-    e.target.value = ""; // Reset input
+    e.target.value = ""; 
   };
 
   const handleDragOver = (e) => {
@@ -391,7 +352,6 @@ const CourseDetails = () => {
       await enrollStudent(id, user._id);
       toast.success("Successfully enrolled in course!");
       setIsEnrolled(true);
-      // Reload course data to update enrollment count
       await loadCourseData(user);
     } catch (error) {
       console.error("Error enrolling:", error);
@@ -409,7 +369,6 @@ const CourseDetails = () => {
       await unenrollStudent(id, user._id);
       toast.success("Successfully unenrolled from course");
       setIsEnrolled(false);
-      // Reload course data to update enrollment count
       await loadCourseData(user);
     } catch (error) {
       console.error("Error unenrolling:", error);
@@ -472,7 +431,6 @@ const CourseDetails = () => {
         courseId: id,
       };
 
-      // Add optional fields based on post type
       if (postType === "announcement" && postDeadline) {
         postData.deadline = new Date(postDeadline).toISOString();
       }
@@ -489,7 +447,6 @@ const CourseDetails = () => {
       const newPost = await createPost(postData);
       setPosts((prev) => [newPost, ...prev]);
 
-      // Reset form
       setPostTitle("");
       setPostBody("");
       setPostType("discussion");

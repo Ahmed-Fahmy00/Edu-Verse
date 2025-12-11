@@ -1,10 +1,4 @@
-/**
- * Helper utility functions
- */
-
-/**
- * Format file size to human readable format
- */
+//Format file size to human readable format
 export function formatFileSize(bytes) {
   if (bytes === 0) return "0 Bytes";
 
@@ -15,26 +9,20 @@ export function formatFileSize(bytes) {
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 }
 
-/**
- * Truncate text to specified length
- */
+//Truncate text to specified length
 export function truncateText(text, maxLength = 100) {
   if (!text) return "";
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";
 }
 
-/**
- * Capitalize first letter of string
- */
+//Capitalize first letter of string
 export function capitalize(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-/**
- * Convert string to title case
- */
+//Convert string to title case
 export function toTitleCase(str) {
   if (!str) return "";
   return str
@@ -44,16 +32,12 @@ export function toTitleCase(str) {
     .join(" ");
 }
 
-/**
- * Generate random ID
- */
+//Generate random ID
 export function generateId() {
   return Math.random().toString(36).substring(2) + Date.now().toString(36);
 }
 
-/**
- * Debounce function
- */
+//Debounce function
 export function debounce(func, wait) {
   let timeout;
   return function executedFunction(...args) {
@@ -66,9 +50,7 @@ export function debounce(func, wait) {
   };
 }
 
-/**
- * Throttle function
- */
+//Throttle function
 export function throttle(func, limit) {
   let inThrottle;
   return function (...args) {
@@ -80,73 +62,54 @@ export function throttle(func, limit) {
   };
 }
 
-/**
- * Deep clone object
- */
+//Deep clone object
 export function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-/**
- * Check if object is empty
- */
+//Check if object is empty
 export function isEmpty(obj) {
   if (!obj) return true;
   return Object.keys(obj).length === 0;
 }
 
-/**
- * Remove duplicates from array
- */
+//Remove duplicates from array
 export function removeDuplicates(arr, key) {
-  if (!key) {
-    return [...new Set(arr)];
-  }
+  if (!key) return [...new Set(arr)];
 
   const seen = new Set();
   return arr.filter((item) => {
     const value = item[key];
-    if (seen.has(value)) {
-      return false;
-    }
+    if (seen.has(value))  return false;
+
     seen.add(value);
     return true;
   });
 }
 
-/**
- * Group array by key
- */
+//Group array by key
 export function groupBy(arr, key) {
   return arr.reduce((result, item) => {
     const group = item[key];
-    if (!result[group]) {
-      result[group] = [];
-    }
+    if (!result[group]) result[group] = [];
+
     result[group].push(item);
     return result;
   }, {});
 }
 
-/**
- * Sort array by key
- */
+//Sort array by key
 export function sortBy(arr, key, order = "asc") {
   return [...arr].sort((a, b) => {
     const aVal = a[key];
     const bVal = b[key];
 
-    if (order === "asc") {
-      return aVal > bVal ? 1 : -1;
-    } else {
-      return aVal < bVal ? 1 : -1;
-    }
+    if (order === "asc") { return aVal > bVal ? 1 : -1;
+    } else { return aVal < bVal ? 1 : -1; }
   });
 }
 
-/**
- * Filter array by search term
- */
+//Filter array by search term
 export function filterBySearch(arr, searchTerm, keys) {
   if (!searchTerm) return arr;
 
@@ -160,9 +123,7 @@ export function filterBySearch(arr, searchTerm, keys) {
   });
 }
 
-/**
- * Create URL with query params
- */
+//Create URL with query params
 export function createUrlWithParams(baseUrl, params) {
   const url = new URL(baseUrl);
   Object.keys(params).forEach((key) => {
@@ -173,9 +134,7 @@ export function createUrlWithParams(baseUrl, params) {
   return url.toString();
 }
 
-/**
- * Parse query string to object
- */
+//Parse query string to object
 export function parseQueryString(queryString) {
   const params = new URLSearchParams(queryString);
   const result = {};
@@ -185,9 +144,7 @@ export function parseQueryString(queryString) {
   return result;
 }
 
-/**
- * Copy text to clipboard
- */
+//Copy text to clipboard
 export async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
@@ -198,9 +155,7 @@ export async function copyToClipboard(text) {
   }
 }
 
-/**
- * Download file from URL
- */
+//Download file from URL
 export function downloadFile(url, filename) {
   const link = document.createElement("a");
   link.href = url;
@@ -210,16 +165,12 @@ export function downloadFile(url, filename) {
   document.body.removeChild(link);
 }
 
-/**
- * Check if user is online
- */
+//Check if user is online
 export function isOnline() {
   return navigator.onLine;
 }
 
-/**
- * Get browser info
- */
+//Get browser info
 export function getBrowserInfo() {
   const ua = navigator.userAgent;
   let browser = "Unknown";
@@ -229,39 +180,26 @@ export function getBrowserInfo() {
   else if (ua.includes("Safari")) browser = "Safari";
   else if (ua.includes("Edge")) browser = "Edge";
 
-  return {
-    browser,
-    userAgent: ua,
-    platform: navigator.platform,
-    language: navigator.language,
-  };
+  return { browser, userAgent: ua, platform: navigator.platform, language: navigator.language, };
 }
 
-/**
- * Format number with commas
- */
+//Format number with commas
 export function formatNumber(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-/**
- * Calculate percentage
- */
+//Calculate percentage
 export function calculatePercentage(value, total) {
   if (total === 0) return 0;
   return Math.round((value / total) * 100);
 }
 
-/**
- * Sleep/delay function
- */
+//Sleep/delay function
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Retry function with exponential backoff
- */
+//Retry function with exponential backoff
 export async function retryWithBackoff(fn, maxRetries = 3, delay = 1000) {
   for (let i = 0; i < maxRetries; i++) {
     try {

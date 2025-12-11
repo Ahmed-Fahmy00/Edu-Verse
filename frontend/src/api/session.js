@@ -4,9 +4,8 @@ const SESSION_KEY = "eduverse_session";
 export const getSession = () => {
   try {
     const session = localStorage.getItem(SESSION_KEY);
-    if (session) {
+    if (session) 
       return JSON.parse(session);
-    }
     return null;
   } catch (error) {
     console.error("Error getting session:", error);
@@ -17,11 +16,7 @@ export const getSession = () => {
 // Set session in localStorage
 export const setSession = (user, token) => {
   try {
-    const session = {
-      user,
-      token,
-      timestamp: new Date().toISOString(),
-    };
+    const session = { user, token, timestamp: new Date().toISOString(), };
     localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   } catch (error) {
     console.error("Error setting session:", error);

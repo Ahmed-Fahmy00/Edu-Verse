@@ -3,15 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Card, Avatar, AvatarFallback, AvatarImage } from "../components/ui/display";
 import { Button } from "../components/ui/button";
-import {
-  Send,
-  Paperclip,
-  X,
-  Image as ImageIcon,
-  FileText,
-  Reply,
-  Trash2,
-} from "lucide-react";
+import { Send, Paperclip, X, Image as ImageIcon, FileText, Reply, Trash2 } from "lucide-react";
 import { getSession } from "../api/session";
 import { getAllChats } from "../api/chats";
 import { getMessages, sendMessage, deleteMessage } from "../api/messages";
@@ -20,7 +12,7 @@ import { getInitials, formatRelativeTime } from "../lib/utils";
 import { toast } from "sonner";
 import "../styles/chats.css";
 
-const POLLING_INTERVAL = 3000; // Poll every 3 seconds
+const POLLING_INTERVAL = 3000; 
 
 const Chats = () => {
   const navigate = useNavigate();
@@ -59,7 +51,6 @@ const Chats = () => {
   }, [activeChat?._id]);
 
   useEffect(() => {
-    // Only scroll if new messages arrived
     if (messages.length > lastMessageCountRef.current) {
       scrollToBottom();
     }
@@ -70,7 +61,6 @@ const Chats = () => {
     adjustTextareaHeight();
   }, [messageText]);
 
-  // Close context menu on click outside
   useEffect(() => {
     const handleClick = () => setContextMenu(null);
     document.addEventListener("click", handleClick);
@@ -82,19 +72,13 @@ const Chats = () => {
     stopPolling();
     pollingRef.current = setInterval(async () => {
       try {
-        // Poll for new messages only - don't set loading state during polling
         const data = await getMessages(chatId);
         if (Array.isArray(data)) {
           setMessages((prev) => {
-            // Create a map of existing message IDs
             const existingIds = new Set(prev.map((m) => m._id));
             const serverIds = new Set(data.map((m) => m._id));
-            
-            // Check if there are new messages from server
             const hasNewMessages = data.some((m) => !existingIds.has(m._id));
-            // Check if any messages were deleted
             const hasDeletedMessages = prev.some((m) => !serverIds.has(m._id));
-            
             if (hasNewMessages || hasDeletedMessages) {
               return data;
             }
@@ -102,8 +86,6 @@ const Chats = () => {
           });
         }
       } catch (error) {
-        // Silently handle polling errors - don't disrupt UI
-        // Only log in development
         if (process.env.NODE_ENV === 'development') {
           console.error("Polling error:", error);
         }
@@ -289,7 +271,6 @@ const Chats = () => {
       );
 
       setMessages((prev) => {
-        // Avoid duplicates - check if message already exists
         if (prev.some((m) => m._id === newMessage._id)) {
           return prev;
         }

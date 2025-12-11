@@ -11,14 +11,8 @@ const isValidObjectId = (id) => {
 exports.getReactions = async (req, res) => {
   try {
     const { postId } = req.query;
-
-    if (!postId) {
-      return res.status(400).json({ error: "postId is required" });
-    }
-
-    if (!isValidObjectId(postId)) {
-      return res.status(400).json({ error: "Invalid postId format" });
-    }
+    if (!postId) return res.status(400).json({ error: "postId is required" });
+    if (!isValidObjectId(postId)) return res.status(400).json({ error: "Invalid postId format" });
 
     const ObjectId = mongoose.Types.ObjectId;
 
@@ -62,18 +56,10 @@ exports.upsertReaction = async (req, res) => {
   try {
     const { postId, type } = req.body;
     const ObjectId = mongoose.Types.ObjectId;
-
-    if (!req.userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-
-    if (!postId || !type) {
-      return res.status(400).json({ error: "postId and type are required" });
-    }
-
-    if (!isValidObjectId(postId)) {
-      return res.status(400).json({ error: "Invalid postId format" });
-    }
+    
+    if (!req.userId) return res.status(401).json({ error: "Authentication required" });
+    if (!postId || !type) return res.status(400).json({ error: "postId and type are required" });
+    if (!isValidObjectId(postId)) return res.status(400).json({ error: "Invalid postId format" });
 
     const validTypes = ["like", "love", "shocked", "laugh", "sad"];
     if (!validTypes.includes(type.toLowerCase())) {
@@ -110,22 +96,15 @@ exports.deleteReaction = async (req, res) => {
     const { postId } = req.params;
     const ObjectId = mongoose.Types.ObjectId;
 
-    if (!req.userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-
-    if (!isValidObjectId(postId)) {
-      return res.status(400).json({ error: "Invalid postId format" });
-    }
+    if (!req.userId) return res.status(401).json({ error: "Authentication required" });
+    if (!isValidObjectId(postId)) return res.status(400).json({ error: "Invalid postId format" });
 
     const result = await Reaction.findOneAndDelete({
       postId: new ObjectId(postId),
       senderId: new ObjectId(req.userId),
     });
 
-    if (!result) {
-      return res.status(404).json({ error: "Reaction not found" });
-    }
+    if (!result) return res.status(404).json({ error: "Reaction not found" });
 
     res.json({ success: true, message: "Reaction deleted successfully" });
   } catch (error) {

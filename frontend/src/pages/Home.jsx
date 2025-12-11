@@ -1,30 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Avatar,
-  AvatarFallback,
-  Badge,
-} from "../components/ui/display";
+import { Card, CardContent, CardHeader, Avatar, AvatarFallback, Badge } from "../components/ui/display";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/form-elements";
-import {
-  Heart,
-  MessageCircle,
-  Smile,
-  Laugh,
-  Frown,
-  ThumbsUp,
-  Send,
-  Image as ImageIcon,
-  X,
-  Trash2,
-  MoreVertical,
-  Edit,
-} from "lucide-react";
+import { Heart, MessageCircle, Smile, Laugh, Frown, ThumbsUp, Send, Image as ImageIcon, X, Trash2, MoreVertical, Edit } from "lucide-react";
 import { getSession } from "../api/session";
 import { getAllPosts, createPost, deletePost, updatePost } from "../api/posts";
 import { getComments, createComment } from "../api/comments";
@@ -64,7 +44,6 @@ const Home = () => {
       loadPosts();
     }
 
-    // Refresh posts every 30 seconds to get updated user names
     const refreshInterval = setInterval(() => {
       loadPosts();
     }, 30000);
@@ -100,19 +79,16 @@ const Home = () => {
       const data = await getAllPosts();
       setPosts(data || []);
 
-      // Load reactions and comments for each post
       if (data && data.length > 0) {
         for (const post of data) {
           loadPostReactions(post._id);
-          loadPostComments(post._id); // Load comments immediately
+          loadPostComments(post._id); 
         }
       }
 
-      // Extract upcoming events from posts
       const events = [];
       if (data && data.length > 0) {
         data.forEach((post) => {
-          // Add announcements with deadlines
           if (post.type === "announcement" && post.deadline) {
             const deadlineDate = new Date(post.deadline);
             if (deadlineDate > new Date()) {
@@ -125,7 +101,6 @@ const Home = () => {
               });
             }
           }
-          // Add events
           if (post.type === "event" && post.eventDate) {
             const eventDate = new Date(post.eventDate);
             if (eventDate > new Date()) {
@@ -142,12 +117,10 @@ const Home = () => {
         });
       }
 
-      // Sort events by date
       events.sort((a, b) => a.date - b.date);
-      setUpcomingEvents(events.slice(0, 5)); // Show top 5 upcoming events
+      setUpcomingEvents(events.slice(0, 5)); 
     } catch (error) {
       console.error("Error loading posts:", error);
-      // Don't show error toast if it's just a 404 (no posts yet)
       if (error.response?.status !== 404) {
         toast.error("Failed to load posts");
       }
@@ -233,19 +206,17 @@ const Home = () => {
     try {
       setCreating(true);
 
-      // Upload images first
       const uploadedFileIds = [];
       for (const image of selectedImages) {
         const uploadedFile = await uploadFile(image);
         uploadedFileIds.push(uploadedFile._id);
       }
 
-      // Create post
       const newPost = await createPost({
         title: postTitle,
         body: postText,
         type: postType,
-        courseId: "GENERAL", // You can add course selection later
+        courseId: "GENERAL", 
         attachmentsId: uploadedFileIds,
       });
 
@@ -325,14 +296,11 @@ const Home = () => {
       const currentReaction = postReactions[postId]?.userReaction;
 
       if (currentReaction === type) {
-        // Remove reaction
         await deleteReaction(postId);
       } else {
-        // Add or update reaction
         await upsertReaction(postId, type);
       }
 
-      // Reload reactions
       await loadPostReactions(postId);
     } catch (error) {
       console.error("Error handling reaction:", error);
@@ -363,7 +331,6 @@ const Home = () => {
       setExpandedPost(null);
     } else {
       setExpandedPost(postId);
-      // Comments are already loaded, no need to reload
     }
   };
 

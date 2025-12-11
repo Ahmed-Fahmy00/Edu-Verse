@@ -15,9 +15,8 @@ const register = async (req, res) => {
     }
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ error: "Email already exists" });
-    }
+
+    if (existingUser) return res.status(409).json({ error: "Email already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -58,21 +57,14 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
-    }
-
+    if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
+    
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+    
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
+    if (!isPasswordValid) return res.status(401).json({ error: "Invalid credentials" });
+   
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
@@ -100,9 +92,8 @@ const login = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password");
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!user) return res.status(404).json({ error: "User not found" });
+
     res.json({ user });
   } catch (error) {
     console.error("Get current user error:", error);
@@ -113,11 +104,8 @@ const getCurrentUser = async (req, res) => {
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
-
+    if (!email) return res.status(400).json({ error: "Email is required" });
+  
     const user = await User.findOne({ email });
     if (!user) {
       return res.json({
@@ -147,11 +135,8 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { token, password } = req.body;
-
-    if (!token || !password) {
-      return res.status(400).json({ error: "Token and password are required" });
-    }
-
+    if (!token || !password) return res.status(400).json({ error: "Token and password are required" });
+    
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     const user = await User.findOne({
@@ -159,10 +144,8 @@ const resetPassword = async (req, res) => {
       resetPasswordExpires: { $gt: Date.now() },
     });
 
-    if (!user) {
-      return res.status(400).json({ error: "Invalid or expired reset token" });
-    }
-
+    if (!user) return res.status(400).json({ error: "Invalid or expired reset token" });
+    
     user.password = await bcrypt.hash(password, 10);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;

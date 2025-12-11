@@ -21,16 +21,12 @@ export const updateCourse = async (courseId, data) => {
 };
 
 export const enrollStudent = async (courseId, userId) => {
-  const response = await client.post(`/courses/${courseId}/enroll`, {
-    userId,
-  });
+  const response = await client.post(`/courses/${courseId}/enroll`, {userId,});
   return response.data;
 };
 
 export const unenrollStudent = async (courseId, userId) => {
-  const response = await client.post(`/courses/${courseId}/unenroll`, {
-    userId,
-  });
+  const response = await client.post(`/courses/${courseId}/unenroll`, {userId, });
   return response.data;
 };
 

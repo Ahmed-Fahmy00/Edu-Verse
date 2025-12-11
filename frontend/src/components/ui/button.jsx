@@ -1,7 +1,7 @@
 import React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "../../lib/utils";
-import "./button.css";
+import "../../styles/button.css";
 
 const Button = React.forwardRef(
   (

@@ -2,10 +2,7 @@ const File = require("../models/File");
 
 const uploadFile = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
     const { courseId } = req.body;
 
     const allowedTypes = [
@@ -26,9 +23,7 @@ const uploadFile = async (req, res) => {
     }
 
     const maxSize = 10 * 1024 * 1024;
-    if (req.file.size > maxSize) {
-      return res.status(413).json({ error: "File size exceeds 10MB limit" });
-    }
+    if (req.file.size > maxSize) return res.status(413).json({ error: "File size exceeds 10MB limit" });
 
     let fileType = "image";
     if (req.file.mimetype === "application/pdf") {
@@ -69,10 +64,7 @@ const uploadFile = async (req, res) => {
 const downloadFile = async (req, res) => {
   try {
     const file = await File.findById(req.params.id);
-
-    if (!file) {
-      return res.status(404).json({ error: "File not found" });
-    }
+    if (!file) return res.status(404).json({ error: "File not found" });
 
     let contentType = "application/octet-stream";
     if (file.fileType === "image") {
@@ -122,10 +114,7 @@ const getFilesByCourse = async (req, res) => {
 const deleteFile = async (req, res) => {
   try {
     const file = await File.findById(req.params.id);
-
-    if (!file) {
-      return res.status(404).json({ error: "File not found" });
-    }
+    if (!file) return res.status(404).json({ error: "File not found" });
 
     if (req.userRole !== "instructor" && req.userRole !== "admin") {
       return res

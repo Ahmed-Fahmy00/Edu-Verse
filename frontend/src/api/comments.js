@@ -6,11 +6,7 @@ export const getComments = async (postId) => {
 };
 
 export const createComment = async (postId, body, parentCommentId = null) => {
-  const response = await client.post("/comments", {
-    postId,
-    body,
-    parentCommentId,
-  });
+  const response = await client.post("/comments", { postId,body, parentCommentId,});
   return response.data;
 };
 

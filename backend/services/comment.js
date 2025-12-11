@@ -1,7 +1,6 @@
 const Comment = require("../models/Comment");
 const mongoose = require("mongoose");
 
-// Helper to validate ObjectId - must be exactly 24 hex characters
 const isValidObjectId = (id) => {
   if (!id) return false;
   const str = String(id);
@@ -11,14 +10,8 @@ const isValidObjectId = (id) => {
 exports.getComments = async (req, res) => {
   try {
     const { postId } = req.query;
-
-    if (!postId) {
-      return res.status(400).json({ error: "postId is required" });
-    }
-
-    if (!isValidObjectId(postId)) {
-      return res.status(400).json({ error: "Invalid postId format" });
-    }
+    if (!postId) return res.status(400).json({ error: "postId is required" });
+    if (!isValidObjectId(postId)) return res.status(400).json({ error: "Invalid postId format" })
 
     const comments = await Comment.find({ postId })
       .sort({ createdAt: 1 })
@@ -36,9 +29,7 @@ exports.getComments = async (req, res) => {
       : [];
 
     const userMap = {};
-    users.forEach((u) => {
-      userMap[u._id.toString()] = u;
-    });
+    users.forEach((u) => {userMap[u._id.toString()] = u; });
 
     const updatedComments = comments.map((comment) => {
       if (comment.sender?.id) {
@@ -68,24 +59,14 @@ exports.createComment = async (req, res) => {
   try {
     const { postId, body, parentCommentId } = req.body;
 
-    if (!req.userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
-
-    if (!postId || !body) {
-      return res.status(400).json({ error: "postId and body are required" });
-    }
-
-    if (!isValidObjectId(postId)) {
-      return res.status(400).json({ error: "Invalid postId format" });
-    }
+    if (!req.userId) return res.status(401).json({ error: "Authentication required" });
+    if (!postId || !body) return res.status(400).json({ error: "postId and body are required" });
+    if (!isValidObjectId(postId)) return res.status(400).json({ error: "Invalid postId format" });
 
     const User = require("../models/User");
     const user = await User.findById(req.userId);
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     const comment = new Comment({
       postId,
@@ -110,12 +91,9 @@ exports.createComment = async (req, res) => {
 exports.deleteComment = async (req, res) => {
   try {
     const { id } = req.params;
-
     const comment = await Comment.findById(id);
-
-    if (!comment) {
-      return res.status(404).json({ error: "Comment not found" });
-    }
+    
+    if (!comment) return res.status(404).json({ error: "Comment not found" });
 
     if (req.userId && comment.sender.id.toString() !== req.userId.toString()) {
       return res

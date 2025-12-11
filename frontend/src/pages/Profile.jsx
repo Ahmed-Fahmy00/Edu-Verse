@@ -3,17 +3,7 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Card, Badge, Avatar, AvatarFallback } from "../components/ui/display";
 import { Button } from "../components/ui/button";
-import {
-  BookOpen,
-  User as UserIcon,
-  MessageCircle,
-  X,
-  Camera,
-  Upload,
-  MoreVertical,
-  Edit,
-  FileText,
-} from "lucide-react";
+import { BookOpen, User as UserIcon, MessageCircle, X, Camera, Upload, MoreVertical, Edit, FileText } from "lucide-react";
 import { getSession, updateSession } from "../api/session";
 import { getUserProfile, getUserPosts, getUserCourses } from "../api/users";
 import { createChat } from "../api/chats";
@@ -53,14 +43,12 @@ const Profile = () => {
     if (session) {
       setCurrentUser(session.user);
 
-      // If no userId in params, show own profile
       if (!userId) {
         setProfileUser(session.user);
         setIsOwnProfile(true);
         setLoading(false);
         loadUserData(session.user._id);
 
-        // Check if edit mode is requested
         if (searchParams.get("edit") === "true") {
           setEditForm({
             name: session.user.name || "",
@@ -72,14 +60,12 @@ const Profile = () => {
           setSearchParams({});
         }
       } else {
-        // Check if viewing own profile
         if (userId === session.user._id) {
           setProfileUser(session.user);
           setIsOwnProfile(true);
           setLoading(false);
           loadUserData(userId);
         } else {
-          // Load other user's profile
           loadProfile(userId);
           loadUserData(userId);
         }
@@ -121,11 +107,9 @@ const Profile = () => {
   };
 
   const loadUserData = async (id) => {
-    // Load user posts
     try {
       setLoadingPosts(true);
       const posts = await getUserPosts(id);
-      // Handle both old format (array) and new format (object with posts array)
       setUserPosts(posts.posts || posts);
     } catch (error) {
       console.error("Error loading posts:", error);
@@ -134,7 +118,6 @@ const Profile = () => {
       setLoadingPosts(false);
     }
 
-    // Load user courses
     try {
       setLoadingCourses(true);
       const courses = await getUserCourses(id);
@@ -182,13 +165,11 @@ const Profile = () => {
 
       let profilePicId = profileUser?.profilePicture || null;
 
-      // Upload profile picture if selected
       if (profilePicFile) {
         const uploadedFile = await uploadFile(profilePicFile);
         profilePicId = uploadedFile._id;
       }
 
-      // Build update data
       const updateData = {
         name: editForm.name,
         email: editForm.email,
@@ -199,12 +180,10 @@ const Profile = () => {
           : profileUser.image || {},
       };
 
-      // Only include password if it's been changed
       if (editForm.password && editForm.password.trim()) {
         updateData.password = editForm.password;
       }
 
-      // Update profile via API
       const response = await fetch(
         `${process.env.REACT_APP_API_URL}/users/${profileUser._id}`,
         {
@@ -223,12 +202,10 @@ const Profile = () => {
 
       const updatedUser = await response.json();
 
-      // Update session and state
       updateSession({ user: updatedUser });
       setProfileUser(updatedUser);
       setCurrentUser(updatedUser);
 
-      // Close modal and reset
       setShowEditModal(false);
       setProfilePicFile(null);
       setProfilePicPreview(null);

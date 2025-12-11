@@ -1,8 +1,3 @@
-/**
- * Custom Hooks Index
- * Central export point for all custom hooks
- */
-
 export { useAuth } from "./useAuth";
 export { default as useDarkMode } from "./useDarkMode";
 export { usePost } from "./usePost";

@@ -78,13 +78,5 @@ export function useAuth() {
     setUser((prev) => ({ ...prev, ...userData }));
   }, []);
 
-  return {
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    register,
-    logout,
-    updateUser,
-  };
+  return { user, loading, isAuthenticated, login, register, logout, updateUser, };
 }

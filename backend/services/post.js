@@ -21,10 +21,8 @@ exports.getAllPosts = async (req, res) => {
 
     const User = require("../models/User");
     
-    // Helper to validate ObjectId - must be exactly 24 hex characters
     const isValidObjectId = (id) => /^[a-fA-F0-9]{24}$/.test(String(id));
     
-    // Filter to only valid MongoDB ObjectIds (24-char hex strings)
     const userIds = [
       ...new Set(posts.map((p) => p.sender?.id?.toString()).filter(Boolean)),
     ].filter(isValidObjectId);
@@ -92,10 +90,8 @@ exports.getPostById = async (req, res) => {
       if (c.sender?.id) userIds.add(c.sender.id.toString());
     });
 
-    // Helper to validate ObjectId - must be exactly 24 hex characters
     const isValidObjectId = (id) => /^[a-fA-F0-9]{24}$/.test(String(id));
     
-    // Filter to only valid MongoDB ObjectIds (24-char hex strings)
     const validUserIds = Array.from(userIds).filter(isValidObjectId);
     
     const users = validUserIds.length > 0

@@ -12,16 +12,10 @@ const isValidObjectId = (id) => {
 const getUserProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    if (!isValidObjectId(id)) {
-      return res.status(400).json({ error: "Invalid user ID format" });
-    }
+    if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid user ID format" });
     
     const user = await User.findById(id).select("-password").lean();
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     res.setHeader("Cache-Control", "private, max-age=300");
     res.json(user);
@@ -62,10 +56,8 @@ const updateUserProfile = async (req, res) => {
       runValidators: true,
     }).select("-password");
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
     res.json(user);
   } catch (error) {
     console.error("Update user profile error:", error);
@@ -79,10 +71,7 @@ const updateUserProfile = async (req, res) => {
 const getUserPosts = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    if (!isValidObjectId(id)) {
-      return res.status(400).json({ error: "Invalid user ID format" });
-    }
+    if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid user ID format" });
     
     const { page = 1, limit = 20 } = req.query;
     const skip = (page - 1) * limit;
@@ -126,15 +115,10 @@ const getUserPosts = async (req, res) => {
 const getUserCourses = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    if (!isValidObjectId(id)) {
-      return res.status(400).json({ error: "Invalid user ID format" });
-    }
+    if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid user ID format" });
     
     const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     let courses = [];
 
@@ -161,11 +145,8 @@ const searchUsers = async (req, res) => {
     const { query, role, limit = 20 } = req.query;
 
     const searchQuery = {};
-
-    if (role) {
-      searchQuery.role = role;
-    }
-
+    if (role) searchQuery.role = role;
+    
     if (query && query.trim().length >= 2) {
       searchQuery.$or = [
         { name: { $regex: query, $options: "i" } },
@@ -173,10 +154,8 @@ const searchUsers = async (req, res) => {
       ];
     }
 
-    if (req.userId) {
-      searchQuery._id = { $ne: req.userId };
-    }
-
+    if (req.userId) searchQuery._id = { $ne: req.userId };
+    
     const limitNum = Math.min(parseInt(limit), 50);
     const users = await User.find(searchQuery)
       .select("name email role profilePicture level")
@@ -194,10 +173,7 @@ const searchUsers = async (req, res) => {
 const getUserStats = async (req, res) => {
   try {
     const userId = req.params.id;
-    
-    if (!isValidObjectId(userId)) {
-      return res.status(400).json({ error: "Invalid user ID format" });
-    }
+    if (!isValidObjectId(userId)) return res.status(400).json({ error: "Invalid user ID format" });
     
     const Comment = require("../models/Comment");
     const Reaction = require("../models/Reaction");

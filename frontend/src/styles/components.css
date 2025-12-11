@@ -1,12 +1,3 @@
-/**
- * Reusable Component Styles
- * Shared styles for common UI patterns across the application
- */
-
-/* ============================================
-   POST COMPONENTS
-   ============================================ */
-
 /* Post Card Base */
 .post-card {
   box-shadow: var(--shadow-card);

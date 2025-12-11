@@ -14,7 +14,6 @@ import PostDetail from "./pages/PostDetail";
 
 const queryClient = new QueryClient();
 
-// Protected Route Component
 function ProtectedRoute({ children }) {
   if (!isAuthenticated()) {
     return <Navigate to="/auth" replace />;
@@ -22,7 +21,6 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
-// Auth Route Component (redirect if already authenticated)
 function AuthRoute({ children }) {
   if (isAuthenticated()) {
     return <Navigate to="/" replace />;

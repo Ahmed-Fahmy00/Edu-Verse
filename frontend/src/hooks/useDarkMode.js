@@ -3,10 +3,8 @@ import { useState, useEffect } from "react";
 const useDarkMode = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("darkMode");
-    if (saved !== null) {
-      return JSON.parse(saved);
-    }
-    return false; // Default to light mode
+    if (saved !== null) return JSON.parse(saved);
+    return false; 
   });
 
   useEffect(() => {
@@ -15,7 +13,6 @@ const useDarkMode = () => {
   }, [isDarkMode]);
 
   const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
-
   return { isDarkMode, toggleDarkMode };
 };
 

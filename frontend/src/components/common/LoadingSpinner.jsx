@@ -1,10 +1,5 @@
-/**
- * Loading Spinner Component
- * Displays a loading indicator with optional message
- */
-
 import React from "react";
-import "./LoadingSpinner.css";
+import "../../styles/loading-spinner.css";
 
 const LoadingSpinner = ({ message = "Loading...", size = "medium" }) => {
   return (

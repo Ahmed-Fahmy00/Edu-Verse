@@ -107,11 +107,8 @@ export function usePost() {
       try {
         const currentReaction = postReactions[postId]?.userReaction;
 
-        if (currentReaction === type) {
-          await deleteReaction(postId);
-        } else {
-          await upsertReaction(postId, type);
-        }
+        if (currentReaction === type) { await deleteReaction(postId);
+        } else { await upsertReaction(postId, type); }
 
         await loadPostReactions(postId);
       } catch (error) {
@@ -124,9 +121,7 @@ export function usePost() {
 
   const handleAddComment = useCallback(
     async (postId, commentText) => {
-      if (!commentText || !commentText.trim()) {
-        return;
-      }
+      if (!commentText || !commentText.trim())  return;
 
       try {
         await createComment(postId, commentText);
@@ -141,18 +136,6 @@ export function usePost() {
     [loadPostComments]
   );
 
-  return {
-    posts,
-    loading,
-    creating,
-    postReactions,
-    postComments,
-    loadPosts,
-    loadPostReactions,
-    loadPostComments,
-    handleCreatePost,
-    handleDeletePost,
-    handleReaction,
-    handleAddComment,
-  };
+  return { posts, loading, creating, postReactions, postComments, loadPosts, loadPostReactions, loadPostComments, 
+    handleCreatePost, handleDeletePost, handleReaction, handleAddComment, };
 }
