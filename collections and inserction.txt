@@ -1,5 +1,14 @@
 use EduVerseD1
 
+db.createCollection("users")
+db.createCollection("courses")
+db.createCollection("posts")
+db.createCollection("comments")
+db.createCollection("reactions")
+db.createCollection("chats")
+db.createCollection("messages")
+db.createCollection("files")
+
 db.users.insertMany([
   { _id: "1", name: "Dr. Ahmed Hassan", email: "ahmed.hassan@gmail.com", password: "$2b$10$hashedpassword1", role: "instructor", level: "Professor", image: {}, createdAt: ISODate("2024-01-15") },
   { _id: "2", name: "Dr. Sarah Mohamed", email: "sarah.mohamed@gmail.com", password: "$2b$10$hashedpassword2", role: "instructor", level: "Associate Professor", image: {}, createdAt: ISODate("2024-01-20") },

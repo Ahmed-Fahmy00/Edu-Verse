@@ -1,0 +1,96 @@
+{
+  "users": { 
+    "_id": "ObjectId",
+    "name": "String",
+    "email": "String",
+    "password": "String",
+    "resetPasswordToken": "String",
+    "resetPasswordExpires": "Date",
+    "level": "String",  
+    "image": "object",
+    "courses": ["String"],
+    "role": "String (enum: student | instructor)",
+    "createdAt": "Date"
+  },
+
+  "courses": {         
+    "_id": "String" /* code for course ID */,
+    "name": "String",
+    "creditHours": "Number",
+    "description": "String",
+    "instructorId": "ObjectId",
+    "enrolled" : "Number",
+    "capacity": "Number"
+  },
+
+  "posts": {
+    "_id": "ObjectId",
+    "sender": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "courseId": "String",   /* optional */
+    "title": "String",
+    "body": "String",
+    "attachmentsId": ["ObjectId"],
+    "type": "String (enum: question | announcement | discussion)",
+    "deadline": "Date",  /* optional */
+    "createdAt": "Date"
+  },
+
+  "comments": {
+    "_id": "ObjectId",
+    "postId": "ObjectId",
+    "sender": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "body": "String",
+    "createdAt": "Date"
+  },
+
+  "reactions": {
+    "_id": "ObjectId",
+    "postId": "ObjectId",
+    "senderId": "ObjectId",
+    "type": "String (enum: like | love | shocked | laugh | sad)",
+    "createdAt": "Date"
+  },
+
+  "chats": {
+    "_id": "ObjectId",
+    "user1": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "user2": {
+      "id": "ObjectId",
+      "name": "String",
+      "image": "binary"
+    },
+    "lastMessage": "string",
+    "updatedAt": "Date"
+  },
+
+  "messages": {
+    "_id": "ObjectId",
+    "senderId": "ObjectId",
+    "receiverId": "ObjectId",
+    "text": "String",
+    "attachmentsId": ["ObjectId"],
+    "replyTo": "ObjectId",  /* optional */
+    "createdAt": "Date"
+  },
+
+  "files": {
+    "_id": "ObjectId",
+    "fileName": "String",
+    "fileType": "String (enum: image | pdf | word)",
+    "fileData": "buffer",
+    "courseId": "ObjectId", /* optional */
+    "createdAt": "Date"
+  }
+}

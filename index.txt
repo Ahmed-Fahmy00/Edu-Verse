@@ -1,0 +1,13 @@
+index
+
+db.users.createIndex({ email: 1 });
+db.courses.createIndex({ instructorId: 1 });
+
+db.posts.createIndex({ createdAt : -1 });
+db.comments.createIndex({ postId: 1 });
+db.reactions.createIndex({ postId: 1 });
+
+db.chats.createIndex({ "user1.id": 1, "user2.id": 1 });
+db.messages.createIndex({ senderId: 1, receiverId: 1, createdAt: 1});
+
+db.files.createIndex({ courseId: 1, createdAt: -1 });
