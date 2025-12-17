@@ -29,3 +29,9 @@ export const searchUsers = async (query) => {
   const response = await apiClient.get("/users/search", { params: { query },});
   return response.data;
 };
+
+// Get instructor report (top contributors leaderboard)
+export const getInstructorReport = async () => {
+  const response = await apiClient.get("/users/report");
+  return response.data;
+};

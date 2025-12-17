@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Post = require("../models/Post");
 const Course = require("../models/Course");
+const { getTopContributorsLeaderboard } = require("../dummy-data/aggregation-pipelines");
 
 // Helper to validate ObjectId - must be exactly 24 hex characters
 const isValidObjectId = (id) => {
@@ -198,6 +199,23 @@ const getUserStats = async (req, res) => {
   }
 };
 
+const instructorReport = async (req, res) => {
+  try {
+    const userId = req.userId; // req.userId is set by auth middleware
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+    
+    const user = await User.findById(userId).select("-password").lean();
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if(user.role !== "instructor") return res.status(403).json({ error: "Unauthorized" });
+
+    const report = await getTopContributorsLeaderboard();
+    res.json({ report });
+
+  } catch (error) {
+    console.error("Instructor report error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
 module.exports = {
   getUserProfile,
   updateUserProfile,
@@ -205,4 +223,5 @@ module.exports = {
   getUserCourses,
   searchUsers,
   getUserStats,
+  instructorReport,
 };

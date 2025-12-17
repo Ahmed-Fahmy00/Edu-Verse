@@ -11,6 +11,7 @@ import Courses from "./pages/Courses";
 import CourseDetails from "./pages/CourseDetails";
 import Chats from "./pages/Chats";
 import PostDetail from "./pages/PostDetail";
+import InstructorReport from "./pages/InstructorReport";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ function App() {
             }
           />
           <Route path="/posts/:postId" element={<ProtectedRoute> <PostDetail /></ProtectedRoute>}/>
+          <Route path="/report" element={<ProtectedRoute> <InstructorReport /></ProtectedRoute>}/>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
