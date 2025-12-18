@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     // randomly generated token sent to the user's email when they request a password reset
     resetPasswordToken: { type: String, default: null },
-    // Stores the expiration timestamp for the reset token (typically 1 hour from creation)
+    // Stores the expiration timestamp for the reset token
     resetPasswordExpires: { type: Date, default: null },
 
     image: { type: Object, default: {} },
