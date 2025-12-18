@@ -1,12 +1,13 @@
 const Course = require("../models/Course");
 const User = require("../models/User");
 
-exports.getAllCourses = async (req, res) => {
+const getAllCourses = async (req, res) => {
   try {
     const { limit = 100, skip = 0 } = req.query;
-
     const courses = await Course.find()
+      // Diplay the following fields ONLY. 
       .select("_id name description creditHours capacity enrolled instructorId")
+      // Replace the id inside instructorId with name, email & profilePicture. 
       .populate("instructorId", "name email profilePicture")
       .limit(parseInt(limit))
       .skip(parseInt(skip))
@@ -19,7 +20,7 @@ exports.getAllCourses = async (req, res) => {
   }
 };
 
-exports.getCourseById = async (req, res) => {
+const getCourseById = async (req, res) => {
   try {
     const { id } = req.params;
     const course = await Course.findById(id)
@@ -38,16 +39,14 @@ exports.getCourseById = async (req, res) => {
   }
 };
 
-exports.createCourse = async (req, res) => {
+const createCourse = async (req, res) => {
   try {
     const { _id, name, creditHours, description } = req.body;
 
     if (!req.userId) return res.status(401).json({ error: "Authentication required" });
     
     if (req.userRole !== "instructor" && req.userRole !== "admin") {
-      return res
-        .status(403)
-        .json({ error: "Only instructors can create courses" });
+      return res.status(403).json({ error: "Only instructors can create courses" });
     }
 
     const course = new Course({
@@ -55,7 +54,6 @@ exports.createCourse = async (req, res) => {
       name,
       creditHours,
       description,
-      capacity,
       instructorId: [req.userId],
     });
 
@@ -67,31 +65,22 @@ exports.createCourse = async (req, res) => {
   }
 };
 
-exports.updateCourse = async (req, res) => {
+const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, creditHours, description, capacity} = req.body;
+    const { name, creditHours, description } = req.body;
 
     const course = await Course.findById(id);
 
     if (!course) return res.status(404).json({ error: "Course not found" });
     
-    if (
-      req.user &&
-      !course.instructorId.some(
-        (instId) => instId.toString() === req.user._id.toString()
-      )
-    ) {
-      return res
-        .status(403)
-        .json({ error: "Not authorized to update this course" });
+    if (req.user && !course.instructorId.some((instId) => instId.toString() === req.user._id.toString())) {
+      return res.status(403).json({ error: "Not authorized to update this course" });
     }
 
     if (name !== undefined) course.name = name;
     if (creditHours !== undefined) course.creditHours = creditHours;
     if (description !== undefined) course.description = description;
-    if (capacity !== undefined) course.capacity = capacity;
-
 
     await course.save();
     res.json(course);
@@ -101,58 +90,49 @@ exports.updateCourse = async (req, res) => {
   }
 };
 
-exports.deleteCourse = async (req, res) => {
+const deleteCourse = async (req, res) => {
   try {
     const { id } = req.params;
-
     if (!req.userId) return res.status(401).json({ error: "Authentication required" });
     
     if (req.userRole !== "instructor" && req.userRole !== "admin") {
-      return res
-        .status(403)
-        .json({ error: "Only instructors can delete courses" });
+      return res.status(403).json({ error: "Only instructors can delete courses" });
     }
 
     const course = await Course.findById(id);
-
     if (!course) return res.status(404).json({ error: "Course not found" });
 
     const isInstructor = course.instructorId.some(
       (instId) => instId.toString() === req.userId.toString()
     );
-
     if (!isInstructor && req.userRole !== "admin") {
-      return res
-        .status(403)
-        .json({ error: "Not authorized to delete this course" });
+      return res.status(403).json({ error: "Not authorized to delete this course" });
     }
 
     await Course.findByIdAndDelete(id);
     res.json({ message: "Course deleted successfully" });
+
   } catch (error) {
     console.error("Error deleting course:", error);
     res.status(500).json({ error: "Failed to delete course" });
   }
 };
 
-exports.enrollStudent = async (req, res) => {
+const enrollStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId || req.body.userId;
 
     const course = await Course.findById(id);
-
     if (!course) return res.status(404).json({ error: "Course not found" });
+    
     if (course.enrolled >= course.capacity) return res.status(400).json({ error: "Course is full" });
-
+    
     const student = await User.findById(userId);
-
     if (!student) return res.status(404).json({ error: "Student not found" });
     if (student.courses.includes(id)) return res.status(400).json({ error: "Already enrolled in this course" });
-
     student.courses.push(id);
     await student.save();
-
     course.enrolled = (course.enrolled || 0) + 1;
     await course.save();
 
@@ -163,17 +143,15 @@ exports.enrollStudent = async (req, res) => {
   }
 };
 
-exports.unenrollStudent = async (req, res) => {
+const unenrollStudent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.userId || req.body.userId;
 
     const course = await Course.findById(id);
-
     if (!course) return res.status(404).json({ error: "Course not found" });
     
     const student = await User.findById(userId);
-
     if (!student) return res.status(404).json({ error: "Student not found" });
   
     student.courses = student.courses.filter((courseId) => courseId !== id);
@@ -191,14 +169,12 @@ exports.unenrollStudent = async (req, res) => {
   }
 };
 
-exports.getEnrolledCourses = async (req, res) => {
+const getEnrolledCourses = async (req, res) => {
   try {
     const { userId } = req.query;
-
     if (!userId) return res.status(400).json({ error: "userId is required" });
     
     const user = await User.findById(userId);
-
     if (!user) return res.status(404).json({ error: "User not found" });
     
     const courses = await Course.find({ _id: { $in: user.courses } }).populate(
@@ -211,4 +187,15 @@ exports.getEnrolledCourses = async (req, res) => {
     console.error("Error fetching enrolled courses:", error);
     res.status(500).json({ error: "Failed to fetch enrolled courses" });
   }
+};
+
+module.exports = {
+  getAllCourses,
+  getCourseById,
+  createCourse,
+  updateCourse,
+  deleteCourse,
+  enrollStudent,
+  unenrollStudent,
+  getEnrolledCourses
 };

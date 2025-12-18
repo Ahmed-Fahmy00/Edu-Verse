@@ -5,6 +5,7 @@ const courseSchema = new mongoose.Schema({
   name: String,
   creditHours: Number,
   description: String,
+  // Stores the _id of a user from the User collection. 
   instructorId: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   enrolled: { type: Number, default: 0 },
   capacity: { type: Number, default: 80 },

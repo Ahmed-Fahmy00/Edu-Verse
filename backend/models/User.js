@@ -6,7 +6,9 @@ const userSchema = new mongoose.Schema(
 
     email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
+    // randomly generated token sent to the user's email when they request a password reset
     resetPasswordToken: { type: String, default: null },
+    // Stores the expiration timestamp for the reset token (typically 1 hour from creation)
     resetPasswordExpires: { type: Date, default: null },
 
     image: { type: Object, default: {} },
@@ -21,6 +23,7 @@ const userSchema = new mongoose.Schema(
     
     createdAt: { type: Date, default: Date.now },
   },
+  // removes the auto-generated __v field that Mongoose adds to track document revisions.
   { versionKey: false }
 );
 

@@ -1,11 +1,9 @@
-const mongoose = require("mongoose");
 const User = require("../models/User");
 const Post = require("../models/Post");
-const Comment = require("../models/Comment");
-const Chat = require("../models/Chat");
 const Course = require("../models/Course");
+const { getTopContributorsLeaderboard } = require("../dummy-data/aggregation-pipelines");
 
-// Helper to validate ObjectId - must be exactly 24 hex characters
+// Must be exactly 24 hex characters.
 const isValidObjectId = (id) => {
   if (!id) return false;
   const str = String(id);
@@ -17,9 +15,11 @@ const getUserProfile = async (req, res) => {
     const { id } = req.params;
     if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid user ID format" });
     
+    // Excludes the addition of the password field. 
     const user = await User.findById(id).select("-password").lean();
     if (!user) return res.status(404).json({ error: "User not found" });
 
+    // Casches data for 5 minutes incase of a repeated request. 
     res.setHeader("Cache-Control", "private, max-age=300");
     res.json(user);
   } catch (error) {
@@ -38,8 +38,14 @@ const updateUserProfile = async (req, res) => {
         .json({ error: "You can only update your own profile" });
     }
 
-    const { name, email, level, image, bio, profilePicture, password } =
-      req.body;
+    const { 
+      name, 
+      email, 
+      level, 
+      image, 
+      bio, 
+      profilePicture, 
+      password } = req.body;
 
     const updateData = {};
     if (name) updateData.name = name;
@@ -54,16 +60,14 @@ const updateUserProfile = async (req, res) => {
       updateData.password = await bcrypt.hash(password, 10);
     }
 
-    const user = await User.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    }).select("-password");
+    // Reflect these changes into the database. 
+    await User.findByIdAndUpdate(id, updateData, { runValidators: true });
+
+    const user = await User.findById(id).select("-password");
 
     if (!user) return res.status(404).json({ error: "User not found" });
-
-    // Update denormalized profile data in related collections
+    
     const newImage = image || profilePicture;
-
     if (newImage || name) {
       const userId = new mongoose.Types.ObjectId(id);
       const updateFields = {};
@@ -109,6 +113,7 @@ const getUserPosts = async (req, res) => {
     const { id } = req.params;
     if (!isValidObjectId(id)) return res.status(400).json({ error: "Invalid user ID format" });
     
+    // Defaults to page 1 with 20 items if not provided.
     const { page = 1, limit = 20 } = req.query;
     const skip = (page - 1) * limit;
     const limitNum = Math.min(parseInt(limit), 50);
@@ -121,9 +126,11 @@ const getUserPosts = async (req, res) => {
         .limit(limitNum)
         .lean(),
       Post.countDocuments({ "sender.id": id }),
+      // Returns user's name + profile picture
       User.findById(id).select("name profilePicture").lean(),
     ]);
 
+    // Incase of any user profile picture/name updates. 
     const updatedPosts = posts.map((post) => ({
       ...post,
       sender: {
@@ -161,8 +168,10 @@ const getUserCourses = async (req, res) => {
     if (user.role === "instructor") {
       courses = await Course.find({
         instructorId: user._id,
+        // Change instructorId so it contains name & email.
       }).populate("instructorId", "name email");
     } else {
+      // Find all courses whose IDs are in the user's courses array.
       courses = await Course.find({ _id: { $in: user.courses } }).populate(
         "instructorId",
         "name email"
@@ -234,6 +243,24 @@ const getUserStats = async (req, res) => {
   }
 };
 
+const instructorReport = async (req, res) => {
+  try {
+    const userId = req.userId; // req.userId is set by auth middleware
+    if (!userId) return res.status(400).json({ error: "User ID is required" });
+    
+    const user = await User.findById(userId).select("-password").lean();
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if(user.role !== "instructor") return res.status(403).json({ error: "Unauthorized" });
+
+    const report = await getTopContributorsLeaderboard();
+    res.json({ report });
+
+  } catch (error) {
+    console.error("Instructor report error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
@@ -241,4 +268,5 @@ module.exports = {
   getUserCourses,
   searchUsers,
   getUserStats,
+  instructorReport,
 };

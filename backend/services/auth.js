@@ -30,10 +30,17 @@ const register = async (req, res) => {
 
     await user.save();
 
+    // creating a JWT (JSON Web Token) for authentication.
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
+      { 
+        userId: user._id, 
+        email: user.email, 
+        role: user.role 
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+      { 
+        expiresIn: "24h" 
+      }
     );
 
     res.status(201).json({
@@ -66,7 +73,11 @@ const login = async (req, res) => {
     if (!isPasswordValid) return res.status(401).json({ error: "Invalid credentials" });
    
     const token = jwt.sign(
-      { userId: user._id, email: user.email, role: user.role },
+      { 
+        userId: user._id, 
+        email: user.email, 
+        role: user.role 
+      },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
@@ -91,9 +102,10 @@ const login = async (req, res) => {
 
 const getCurrentUser = async (req, res) => {
   try {
+    // Find the user by their ID without including their password. 
     const user = await User.findById(req.userId).select("-password");
     if (!user) return res.status(404).json({ error: "User not found" });
-
+    // No password is displayed. 
     res.json({ user });
   } catch (error) {
     console.error("Get current user error:", error);
@@ -113,16 +125,18 @@ const forgotPassword = async (req, res) => {
       });
     }
 
+    // RAW token sent to user's email. 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
+    // Hashes the token to be stored in database. 
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
+    // Saves hashed token to user's document. 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = Date.now() + 3600000;
+    // Saves when the hashed token expires. 
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
+    // Calls the function that sends emails. Sends over the RAW token.
     await sendPasswordResetEmail(email, resetToken);
 
     res.json({ message: "If an account exists, a reset email has been sent" });
@@ -134,11 +148,14 @@ const forgotPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
+    // Recieves the RAW token + new password. 
     const { token, password } = req.body;
     if (!token || !password) return res.status(400).json({ error: "Token and password are required" });
     
+    // Hashes the token recieved from the user.
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
+    // Searches for the user containing that hash + not expired. 
     const user = await User.findOne({
       resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: Date.now() },
