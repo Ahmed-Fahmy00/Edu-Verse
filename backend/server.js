@@ -6,7 +6,13 @@ const connectDB = require("./database/connection");
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://edu-verse-eta.vercel.app"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
