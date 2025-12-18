@@ -8,11 +8,7 @@ const uploadFile = async (req, res) => {
     const allowedTypes = [
       "image/jpeg",
       "image/png",
-      "image/gif",
-      "image/webp",
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/pdf"
     ];
 
     if (!allowedTypes.includes(req.file.mimetype)) {
@@ -29,12 +25,6 @@ const uploadFile = async (req, res) => {
     let fileType = "image";
     if (req.file.mimetype === "application/pdf") {
       fileType = "pdf";
-    } else if (
-      req.file.mimetype === "application/msword" ||
-      req.file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
-      fileType = "word";
     }
 
     const fileData = {
@@ -48,9 +38,7 @@ const uploadFile = async (req, res) => {
     if (courseId && courseId.trim() !== "") {
       fileData.courseId = courseId;
     }
-
     const file = new File(fileData);
-
     await file.save();
 
     res.status(201).json({
@@ -78,9 +66,6 @@ const downloadFile = async (req, res) => {
       contentType = "image/jpeg";
     } else if (file.fileType === "pdf") {
       contentType = "application/pdf";
-    } else if (file.fileType === "word") {
-      contentType =
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     }
 
     res.set({
