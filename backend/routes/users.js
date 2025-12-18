@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { register, login, getCurrentUser, forgotPassword, resetPassword, } = require("../services/auth");
-const { getUserProfile, updateUserProfile, getUserPosts, getUserCourses, searchUsers, getUserStats, instructorReport} = require("../services/user");
+const { getUserProfile, updateUserProfile, getUserPosts, getUserCourses, searchUsers, getUserStats } = require("../services/user");
 const { instructorReport, instructorReport2, instructorReport3, instructorReport4 } = require("../services/report");
 const { auth } = require("../middleware/auth");
 
